@@ -1,11 +1,3 @@
-src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"
-VanillaTilt.init(document.querySelectorAll(".card"), {
-    max: 4,
-    speed: 800,
-scale: 1.03,
-glare: true,
-"max-glare": 0.5,
-});
 let weather = {
     apiKey: "aba6ff9d6de967d5eac6fd79114693cc",
     fetchWeather: function (city) {
@@ -25,19 +17,19 @@ let weather = {
         .then((data) => this.displayWeather(data));
     },
     displayWeather: function (data) {
-      const { name } = data;
+      const { name, coord } = data;
       const { icon, description } = data.weather[0];
       const { temp, humidity } = data.main;
       const { speed } = data.wind;
-      document.querySelector(".city").innerText = "Weather in " + name;
+  
+      document.querySelector(".city").innerText =
+        "Weather in " + name + " (" + coord.lat + ", " + coord.lon + ")";
       document.querySelector(".icon").src =
         "https://openweathermap.org/img/wn/" + icon + ".png";
       document.querySelector(".description").innerText = description;
       document.querySelector(".temp").innerText = temp + "°C";
-      document.querySelector(".humidity").innerText =
-        "Humidity: " + humidity + "%";
-      document.querySelector(".wind").innerText =
-        "Wind speed: " + speed + " km/h";
+      document.querySelector(".humidity").innerText = "Humidity: " + humidity + "%";
+      document.querySelector(".wind").innerText = "Wind speed: " + speed + " km/h";
       document.querySelector(".weather").classList.remove("loading");
       document.body.style.backgroundImage =
         "url('https://source.unsplash.com/1600x900/?" + name + "')";
@@ -68,13 +60,11 @@ let weather = {
       request.open("GET", request_url, true);
   
       request.onload = function () {
-  
         if (request.status == 200) {
           var data = JSON.parse(request.responseText);
           weather.fetchWeather(data.results[0].components.city);
-          console.log(data.results[0].components.city)
+          console.log(data.results[0].components.city);
         } else if (request.status <= 500) {
-  
           console.log("unable to geocode! Response code: " + request.status);
           var data = JSON.parse(request.responseText);
           console.log("error msg: " + data.status.message);
@@ -87,45 +77,37 @@ let weather = {
         console.log("unable to connect to server");
       };
   
-      request.send(); 
+      request.send();
     },
-    getLocation: function() {
-      function success (data) {
+    getLocation: function () {
+      function success(data) {
         geocode.reverseGeocode(data.coords.latitude, data.coords.longitude);
       }
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(success, console.error);
-      }
-      else {
+      } else {
         weather.fetchWeather("Manipal");
       }
-    }
+    },
   };
   
   document.querySelector(".search button").addEventListener("click", function () {
     weather.search();
   });
   
-  document
-    .querySelector(".search-bar")
-    .addEventListener("keyup", function (event) {
-      if (event.key == "Enter") {
-        weather.search();
-      }
-    });
+  document.querySelector(".search-bar").addEventListener("keyup", function (event) {
+    if (event.key == "Enter") {
+      weather.search();
+    }
+  });
   
   weather.fetchWeather("Manipal");
   
-  document
-    .querySelector(".search-bar")
-    .addEventListener("keyup", function (event) {
-      if (event.key == "Enter") {
-        weather.search();
-      }
-    });
+  document.querySelector(".search-bar").addEventListener("keyup", function (event) {
+    if (event.key == "Enter") {
+      weather.search();
+    }
+  });
   
   geocode.getLocation();
-
-
-
   
